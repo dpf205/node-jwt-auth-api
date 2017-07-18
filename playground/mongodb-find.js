@@ -1,3 +1,5 @@
+// dpfs-MacBook-Pro@dpf205:~/mongo/bin $ ./mongod --dbpath ~/mongo-data
+
 const {
 	MongoClient,
 	ObjectId
