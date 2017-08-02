@@ -1,6 +1,8 @@
 // dpfs-MacBook-Pro@dpf205:~/mongo/bin $ ./mongod --dbpath ~/mongo-data
 
-// const MongoClient = require('mongodb').MongoClient;
+// https://mongodb.github.io/node-mongodb-native/
+
+ const MongoClient = require('mongodb').MongoClient;
 
 MongoClient.connect('mongodb://localhost:27017/TaskList', (err, db) => {
 	if (err) {

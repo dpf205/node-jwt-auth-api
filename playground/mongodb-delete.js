@@ -30,7 +30,7 @@ MongoClient.connect('mongodb://localhost:27017/TaskList', (err, db) => {
 	});
 
 	db.collection('Users').deleteOne({
-		_id: ObjectId("596a2fd8a161d30daa4d19df")
+		_id: new ObjectId("596a2fd8a161d30daa4d19df")
 	}, (result) => {
 		console.log(result);
 	});
