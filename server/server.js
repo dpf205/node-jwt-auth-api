@@ -10,7 +10,7 @@ var app = express();
 
 
 // Setup middleware
-app.use(bodyParser.json());  // send JSON to express application
+app.use(bodyParser.json()) ;  // send JSON to express application
 
 
 app.post('/tasks', (req,res) => {
