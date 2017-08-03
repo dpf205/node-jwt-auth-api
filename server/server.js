@@ -1,30 +1,33 @@
-var mongoose = require('mongoose'); // @4.5.9 to avoid verbose warning triggered by later versions
-var port = process.env.PORT || 3000;
+var express = require('express');
+var bodyParser = require('body-parser')
 
-mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://admin:password@ds127883.mlab.com:27883/node-tasks-api');
+var {mongoose} = require('./db/mongoose');
+var {Task} = require('./models/task');
+var {User} = require('./models/user');
 
-// create model schema
-var Task = mongoose.model('Task', {
-	text: {
-		type: String
-	},
-	completed: {
-		type: Boolean
-	},
-	completedAt: {
-		type: Number
-	}
+var port  = process.env.PORT || 3000;
+var app = express();
+
+
+// Setup middleware
+app.use(bodyParser.json()); // send JSON to express application
+
+
+app.post('/tasks', (req,res) => {
+	//console.log(req.body);
+
+	var task = new Task({
+		text: req.body.text
+	});
+
+	task.save().then((doc) => {
+		res.send(doc);
+	}, (e) => {
+		res.status(400).send(e);
+	});
 });
 
-var anotherTask = new Task({
-	text: 'billions',
-	completed: true,
-	completedAt: 0900
-});
 
-anotherTask.save().then((docs) => {
-	console.log('task saved successfully', docs);
-}, (e) => {
-	console.log('unable to save task', e);
+app.listen(port, () => {
+	console.log(`\n express server on ${port} \n`);
 });
