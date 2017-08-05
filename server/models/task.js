@@ -17,4 +17,4 @@ var Task = mongoose.model('Task', {
 	}
 });
 
-module.exports = {Task} //{ Task:Task}
+module.exports = {Task}; //{ Task:Task}

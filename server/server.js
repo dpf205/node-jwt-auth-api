@@ -12,7 +12,6 @@ var app = express();
 // Setup middleware
 app.use(bodyParser.json()) ;  // send JSON to express application
 
-
 app.post('/tasks', (req,res) => {
 	//console.log(req.body);
 
@@ -31,3 +30,5 @@ app.post('/tasks', (req,res) => {
 app.listen(port, () => {
 	console.log(`\n express server on ${port} \n`);
 });
+
+module.exports = {app};
