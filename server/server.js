@@ -26,6 +26,13 @@ app.post('/tasks', (req,res) => {
 	});
 });
 
+app.get('/tasks', (req,res)=>{
+	Task.find().then((tasks) => {
+		res.send({tasks});
+	}, (e) =>{
+		res.status(400).send(e);
+	})
+})
 
 app.listen(port, () => {
 	console.log(`\n express server on ${port} \n`);
