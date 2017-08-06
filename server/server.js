@@ -12,7 +12,8 @@ var app = express();
 // Setup middleware
 app.use(bodyParser.json()) ;  // send JSON to express application
 
-app.post('/tasks', (req,res) => {
+// endpoints
+app.post('/tasks', (req, res) => {
 	//console.log(req.body);
 
 	var task = new Task({
@@ -26,13 +27,13 @@ app.post('/tasks', (req,res) => {
 	});
 });
 
-app.get('/tasks', (req,res)=>{
+app.get('/tasks', (req, res) => {
 	Task.find().then((tasks) => {
 		res.send({tasks});
-	}, (e) =>{
+	}, (e) => {
 		res.status(400).send(e);
-	})
-})
+	});
+});
 
 app.listen(port, () => {
 	console.log(`\n**express server on port ${port}`);

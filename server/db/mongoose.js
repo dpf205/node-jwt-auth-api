@@ -7,7 +7,7 @@ const mLab_URI = 'mongodb://admin:password@ds127883.mlab.com:27883/node-tasks-ap
 
 mongoose.Promise = global.Promise;
 mongoose.connect(mLab_URI, () =>{
-	console.log('**connected to mLab URI \n');
+	console.log('**connected to mLab URI\n');
 });
 
 module.exports = {mongoose} // 	mongoose: mongoose
