@@ -3,13 +3,16 @@
 const expect = require('expect');
 const request = require('supertest');
 
+const {ObjectID} = require('mongodb');
 const {app} = require('./../server');
 const {Task} = require('./../models/task');
 
 // populate db
 const tasks = [{
+	_id: new ObjectID(),
 	text: '1st test task'
 }, {
+	_id: new ObjectID(),
 	text: '2nd test task'
 }];
 
@@ -72,4 +75,35 @@ describe('GET /tasks', () => {
 		})
 		.end(done);
 	});
+});
+
+describe('GET /tasks/:id', () => {
+	it('should return task document', (done) => {
+		request(app)
+		.get(`/tasks/${tasks[0]._id.toHexString()}`) // convert ObjectID to a string via .toHexString()
+		.expect(200)
+		.expect((res) => {
+			expect(res.body.task.text).toBe(tasks[0].text);
+		})
+		.end(done);
+	});
+
+	it('should return a 404 if task not found', (done) => {
+		var hexId = new ObjectID().toHexString();
+
+		request(app)
+		.get(`/tasks/${hexId}`)
+		.expect(404)
+		.end(done);
+	})
+
+
+	it('should return 404 for invalid ObjectID', (done) => {
+		request(app)
+		.get('/tasks/123abc') // improper format for ObjectID
+		.expect(404)
+		.end(done)
+	});
+
+
 });
