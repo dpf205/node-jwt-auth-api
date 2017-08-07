@@ -16,7 +16,7 @@ const tasks = [{
 	text: '2nd test task'
 }];
 
-//run beforeEach before EVERY test to empty db and seed it before every supertest request
+// run beforeEach before EVERY test to empty db and seed it before every supertest request
 beforeEach((done) => {
 	Task.remove({}).then(() => {
 		return Task.insertMany(tasks);
@@ -43,7 +43,7 @@ describe('POST /tasks', () => {
 			expect(tasks.length).toBe(1);
 			expect(tasks[0].text).toBe(text); // new task created and prepended
 			done();
-			}).catch((e) => done(e)); // arrow function passes error to  done() using the statement syntaxt NOT the arrow function expression syntax
+			}).catch((e) => done(e)); // arrow function passes error to done() using the statement syntaxt NOT the arrow function expression syntax
 		});
 	});
 
