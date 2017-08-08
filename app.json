@@ -1,0 +1,6 @@
+{
+	"name": "node-task-api",
+	"description": "Node.js CRUD api",
+	"repository": "https://github.com/dpf205/node-task-api",
+	"keywords": ["node", "express", "static"]
+}
