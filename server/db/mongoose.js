@@ -6,7 +6,7 @@ require('dotenv').config(); // https://github.com/motdotla/dotenv
 
 var mongoose = require('mongoose'); // @4.5.9 to avoid current verbose warning triggered by later versions
 
-const MLAB_URI = `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@ds127883.mlab.com:27883/node-tasks-api`;
+const MLAB_URI = process.env.MLAB_URI;
 
 mongoose.Promise = global.Promise;
 
