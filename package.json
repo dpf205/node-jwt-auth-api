@@ -4,14 +4,16 @@
     "description": "",
     "main": "index.js",
     "scripts": {
+        "start": "node server/server.js",
         "test": "mocha server/**/*.test.js",
         "test-watch": "nodemon --exec 'npm test'"
     },
-    "keywords": [],
-    "author": "",
+    "engines": "6.4.0",
+    "author": "F",
     "license": "ISC",
     "dependencies": {
         "body-parser": "^1.15.2",
+        "dotenv": "^4.0.0",
         "express": "^4.14.0",
         "mongodb": "^2.2.30",
         "mongoose": "4.5.9"
