@@ -15,7 +15,7 @@ app.use(bodyParser.json()) ;  // send JSON to express application
 
 // endpoints
 app.get('/', (req,res) => {
-	res.send('This is the home page');
+	res.send('This is the test home page');
 })
 
 
@@ -34,7 +34,6 @@ app.post('/tasks', (req, res) => {
 });
 
 app.get('/tasks', (req, res) => {
-
 	Task.find().then((tasks) => {
 		res.send({tasks}); //  tasks: tasks
 	}, (e) => {
