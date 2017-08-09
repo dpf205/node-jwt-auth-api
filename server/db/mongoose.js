@@ -8,10 +8,11 @@ var mongoose = require('mongoose'); // @4.5.9 to avoid current verbose warning t
 
 mongoose.Promise = global.Promise;
 
-const mLabURI = process.env.MLAB_URI;
+// connect to Heroku addon mLab db "MONGOLAB_BLUE_URI" or directly via mlab account MLAB_URI
+mongoose.connect(process.env.MONGOLAB_BLUE_URI || process.env.MLAB_URI);
 
-mongoose.connect(mLabURI, () =>{
-	console.log('** connected to mLab URI\n');
-});
+// mongoose.connect(mLabURI, () =>{
+// 	console.log('** connected to mLab URI\n');
+// });
 
 module.exports = {mongoose} // 	mongoose: mongoose
