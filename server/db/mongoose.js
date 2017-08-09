@@ -14,12 +14,9 @@ mongoose.connect(process.env.MONGOLAB_BLUE_URI || process.env.MLAB_URI, () => {
 		console.log('** connected to private mLab DB instance');
 	}
 	else if (process.env.MONGOLAB_BLUE_URI) {
-		console.log('** conected to Heroku mLab addon instance');
+		console.log('** connected to Heroku mLab addon instance');
 	}
 });
 
-// mongoose.connect(mLabURI, () =>{
-// 	console.log('** connected to mLab URI\n');
-// });
 
 module.exports = {mongoose} // 	mongoose: mongoose
