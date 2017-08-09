@@ -34,6 +34,7 @@ app.post('/tasks', (req, res) => {
 });
 
 app.get('/tasks', (req, res) => {
+
 	Task.find().then((tasks) => {
 		res.send({tasks}); //  tasks: tasks
 	}, (e) => {
@@ -61,7 +62,7 @@ app.get('/tasks/:id', (req,res) => {
 
 
 app.listen(port, () => {
-	console.log(`\n**express server on port ${port}`);
+	console.log(`\n** express server on port ${port}`);
 });
 
 module.exports = {app}; // app: app
