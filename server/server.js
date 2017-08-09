@@ -14,6 +14,11 @@ var app = express();
 app.use(bodyParser.json()) ;  // send JSON to express application
 
 // endpoints
+app.get('/', (req,res) => {
+	res.send('This is the home page');
+})
+
+
 app.post('/tasks', (req, res) => {
 	//console.log(req.body);
 
