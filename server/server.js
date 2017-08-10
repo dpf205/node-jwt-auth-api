@@ -1,7 +1,8 @@
-var express = require('express');
-var bodyParser = require('body-parser')
-
+const _ = require('lodash');
+const express = require('express');
+const  bodyParser = require('body-parser')
 const {ObjectID} = require('mongodb');
+
 var {mongoose} = require('./db/mongoose');
 var {Task} = require('./models/task');
 var {User} = require('./models/user');
@@ -34,7 +35,7 @@ app.post('/tasks', (req, res) => {
 });
 
 app.get('/tasks', (req, res) => {
-	
+
 	Task.find().then((tasks) => {
 		res.send({tasks}); //  tasks: tasks
 	}, (e) => {
@@ -76,6 +77,29 @@ app.delete('/tasks/:id', (req,res) => {
 		res.status(404).send();
 	});
 });
+
+app.patch('/tasks/:id', (req,res) => {
+	var id = req.params.id;
+
+	// limit which proerties are updated by user
+	var body = _.pick(req.body, ['text', 'completed']) // _.pick() takes object and extracts an array of desired properties
+
+	if(_.isBoolean(body.completed) && body.completed){
+		body.completedAt = new Date().getTime();
+	}else{
+		body.completed = false;
+		body.completedAt = null;
+	}
+
+	Task.findByIdAndUpdate(id, {$set: body}, {new: true}).then((task) => {
+		if(!task){
+			return res.status(404).send();
+		}
+		res.send({task});
+	}).catch((e) => {
+		res.status(400).send();
+	})
+})
 
 app.listen(port, () => {
 	console.log(`\n** express server on port ${port}`);
