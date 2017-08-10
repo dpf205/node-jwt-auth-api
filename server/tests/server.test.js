@@ -107,3 +107,44 @@ describe('GET /tasks/:id', () => {
 
 
 });
+
+describe('DELETE /tasks/:id', () =>{
+	it('should remove a task', (done) => {
+
+		var hexId = tasks[1]._id.toHexString();
+
+		request(app)
+		.delete(`/tasks/${hexId}`)
+		.expect(200)
+		.expect((res) => {
+			expect(res.body.task._id).toBe(hexId);
+		})
+		.end((err,res) => {
+			if(err){
+				return done(err)
+			}
+
+			Task.findById(hexId).then((task) => {
+				expect(task).toNotExist();
+				done();
+			}).catch((e) => done(e));
+		});
+	});
+
+	it('should return a 404 if task is not found', (done) => {
+		var hexId = new ObjectID().toHexString();
+
+		request(app)
+		.delete(`/todos/${hexId}`)
+		.expect(404)
+		.end(done);
+	});
+
+	it('should return 404 if ObjectID is invalid', (done) => {
+		
+		request(app)
+		.get('/tasks/123abc') // improper format for ObjectID
+		.expect(404)
+		.end(done)
+	});
+});

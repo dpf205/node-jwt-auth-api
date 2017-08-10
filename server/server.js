@@ -34,6 +34,7 @@ app.post('/tasks', (req, res) => {
 });
 
 app.get('/tasks', (req, res) => {
+	
 	Task.find().then((tasks) => {
 		res.send({tasks}); //  tasks: tasks
 	}, (e) => {
@@ -70,7 +71,7 @@ app.delete('/tasks/:id', (req,res) => {
 		if(!task){
 			return res.status(404).send();
 		}
-		res.send(task);
+		res.send({task}); // {task: task}
 	}).catch((e) => {
 		res.status(404).send();
 	});
