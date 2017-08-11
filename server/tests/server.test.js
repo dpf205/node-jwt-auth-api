@@ -7,13 +7,16 @@ const {ObjectID} = require('mongodb');
 const {app} = require('./../server');
 const {Task} = require('./../models/task');
 
-// populate db
+// populate db w/ test data
 const tasks = [{
 	_id: new ObjectID(),
 	text: '1st test task'
 }, {
 	_id: new ObjectID(),
-	text: '2nd test task'
+	text: '2nd test task',
+	completed: true,
+	completedAt: 333
+
 }];
 
 // run beforeEach before EVERY test to empty db and seed it before every supertest request
@@ -135,16 +138,60 @@ describe('DELETE /tasks/:id', () =>{
 		var hexId = new ObjectID().toHexString();
 
 		request(app)
-		.delete(`/todos/${hexId}`)
+		.delete(`/tasks/${hexId}`)
 		.expect(404)
 		.end(done);
 	});
 
 	it('should return 404 if ObjectID is invalid', (done) => {
-		
+
 		request(app)
 		.get('/tasks/123abc') // improper format for ObjectID
 		.expect(404)
 		.end(done)
 	});
+});
+
+describe('PATCH /tasks/:id', () => {
+
+	it('should update the task' , (done) => {
+
+		var hexId = tasks[0]._id.toHexString();
+		var newText = "this should be the new text";
+
+		request(app)
+		.patch(`/tasks/${hexId}`)
+		.send({
+			completed: true,
+			text: newText
+		})
+		.expect(200)
+		.expect((res) => {
+			expect(res.body.task.text).toBe(newText);
+			expect(res.body.task.completed).toBe(true);
+			expect(res.body.task.completedAt).toBeA('number');
+		})
+		.end(done);
+
+	});
+
+
+	it('should clear completedAt when task is not completed', (done) => {
+		var hexId = tasks[1]._id.toHexString();
+		var newText = "this should be the new text";
+
+		request(app)
+		.patch(`/tasks/${hexId}`)
+		.send({
+			completed: false,
+			text: newText
+		})
+		.expect(200)
+		.expect((res) => {
+			expect(res.body.task.text).toBe(newText);
+			expect(res.body.task.completed).toBe(false);
+			expect(res.body.task.completedAt).toNotExist();
+		})
+		.end(done);
+	})
 });
