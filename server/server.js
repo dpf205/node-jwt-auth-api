@@ -1,19 +1,12 @@
 const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser')
-const {
-	ObjectID
-} = require('mongodb');
 
-var {
-	mongoose
-} = require('./db/mongoose');
-var {
-	Task
-} = require('./models/task');
-var {
-	User
-} = require('./models/user');
+const {ObjectID} = require('mongodb');
+var {mongoose} = require('./db/mongoose');
+var {Task} = require('./models/task');
+var {User} = require('./models/user');
+var {authenticate} = require('./middleware/authenticate');
 
 var port = process.env.PORT || 3000;
 var app = express();
@@ -21,6 +14,7 @@ var app = express();
 
 // Setup middleware
 app.use(bodyParser.json()); // send JSON to express application
+
 
 // Endpoints
 app.get('/', (req, res) => {
@@ -134,7 +128,11 @@ app.post('/users', (req, res) => {
 	})
 });
 
-// app.get('/users/me', )
+
+app.get('/users/me', authenticate, (req, res) => {
+	res.send(req.user);
+});
+
 
 app.listen(port, () => {
 	console.log(`\n** express server on port ${port}`);

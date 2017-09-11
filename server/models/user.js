@@ -35,9 +35,9 @@ var UserSchema = new mongoose.Schema({
 
 UserSchema.methods.toJSON = function () {
 	var user = this;
-	var userObject = user.toObject(); // toObject() converts mongoose object to object where only the properties available on the document exist
+	var userObject = user.toObject(); // toObject() converts mongoose variable user to an object where only the properties available on the document exist
 
-	return _.pick(userObject, ['_id', 'email']);
+	return _.pick(userObject, ['_id', 'email']); // ommit password and tokens array
 };
 
 UserSchema.methods.generateAuthToken = function () {
@@ -57,7 +57,28 @@ UserSchema.methods.generateAuthToken = function () {
 	return user.save().then(() => { // success argument for the next .then() call
 		return token;
 	});
-}; // es6 arrow functions will not bind the "this" keyword
+}; // use regular "function" keyword es6 arrow functions will not bind the "this" keyword
+
+// Auth GET /users/me
+UserSchema.statics.findByToken = function (token) {
+
+	var User = this; // model methods get called as the model with the "this" keyword binding
+	var decoded; //stores the decoded jwt values, ie the return result from jwt.verify from hashing.js
+
+	// handle any errors from jwt.verify()
+	try {
+		decoded = jwt.verify(token, 'abc123');;
+	} catch (e) {
+		return Promise.reject();
+	}
+
+	// if successful...
+	return User.findOne({
+		'_id': decoded._id,
+		'tokens.token': token,
+		'tokens.access': 'auth'
+	});
+}; // use regular "function" keyword es6 arrow functions will not bind the "this" keyword
 
 
 var User = mongoose.model('User', UserSchema);
