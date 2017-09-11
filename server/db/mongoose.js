@@ -1,4 +1,3 @@
-
 // http://www.mongoosejs,com/docs/validation.html
 // http://www.mongoosejs.com/docs/guide.html
 
@@ -10,13 +9,14 @@ mongoose.Promise = global.Promise;
 
 // connect to Heroku addon mLab db "MONGOLAB_BLUE_URI" or directly via mlab account "MLAB_URI"
 mongoose.connect(process.env.MONGOLAB_BLUE_URI || process.env.MLAB_URI, () => {
-	if(process.env.MLAB_URI){
+	if (process.env.MLAB_URI) {
 		console.log('** connected to private mLab DB instance');
-	}
-	else if (process.env.MONGOLAB_BLUE_URI) {
+	} else {
 		console.log('** connected to Heroku mLab addon instance');
 	}
 });
 
 
-module.exports = {mongoose} // 	mongoose: mongoose
+module.exports = {
+	mongoose
+} // 	mongoose: mongoose
