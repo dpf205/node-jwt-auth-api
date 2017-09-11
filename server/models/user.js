@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator'); // https://www.npmjs.com/package/validator
 const jwt = require('jsonwebtoken'); // jwt.io
 const _ = require('lodash');
+const bcrypt =  require('bcryptjs');
 
 var UserSchema = new mongoose.Schema({
 	email: {
@@ -50,7 +51,7 @@ UserSchema.methods.generateAuthToken = function () {
 	}, 'abc123').toString();
 
 	user.tokens.push({
-		access, // destructured var access = 'auth';
+		access, // destructured var access = 'auth'; from above
 		token
 	});
 
@@ -79,6 +80,22 @@ UserSchema.statics.findByToken = function (token) {
 		'tokens.access': 'auth'
 	});
 }; // use regular "function" keyword es6 arrow functions will not bind the "this" keyword
+
+UserSchema.pre('save', function(next) {
+	var user = this;
+
+	// check if password is modified;
+		if(user.isModified('password')){
+			bcrypt.genSalt(10, (err, salt) => {
+				bcrypt.hash(user.password, salt, (err, hash) => {
+					user.password = hash; // update the user document
+					next();
+				});
+			});
+		}else{
+			next();
+		}
+	}); // use regular "function" keyword es6 arrow functions will not bind the "this" keyword
 
 
 var User = mongoose.model('User', UserSchema);
