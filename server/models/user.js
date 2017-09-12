@@ -58,7 +58,7 @@ UserSchema.methods.generateAuthToken = function () {
 	return user.save().then(() => { // success argument for the next .then() call
 		return token;
 	});
-}; // use regular "function" keyword es6 arrow functions will not bind the "this" keyword
+}; // use "function" keyword; es6 arrow functions will not provide "this" keyword binding
 
 // Auth GET /users/me
 UserSchema.statics.findByToken = function (token) {
@@ -79,7 +79,27 @@ UserSchema.statics.findByToken = function (token) {
 		'tokens.token': token,
 		'tokens.access': 'auth'
 	});
-}; // use regular "function" keyword es6 arrow functions will not bind the "this" keyword
+}; // use "function" keyword; es6 arrow functions will not provide "this" keyword binding
+
+UserSchema.statics.findByCredentials = function (email, password){ // password is in plain text form
+		var User = this;
+
+		return User.findOne({email}).then((user) => {
+			if(!user){
+				return Promise.reject();
+			}
+
+			return new Promise((resolve, reject) => {
+				bcrypt.compare(password, user.password, (err, result) => { // user.password is the hashed password
+					if(result){
+						resolve(user)
+					}else{
+						reject();
+					}
+				});
+			});
+		});
+}; // use "function" keyword; es6 arrow functions will not provide "this" keyword binding
 
 UserSchema.pre('save', function(next) {
 	var user = this;
@@ -100,6 +120,4 @@ UserSchema.pre('save', function(next) {
 
 var User = mongoose.model('User', UserSchema);
 
-module.exports = {
-	User
-}; // {User: User}
+module.exports = {User}; // {User: User}

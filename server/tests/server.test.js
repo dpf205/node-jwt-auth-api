@@ -250,7 +250,6 @@ describe('POST /users', () => {
 
 	it('should not create user if email is already in use, even w/ a valid password', (done) => {
 
-
 		request(app)
 		 .post('/users')
 		 .send({
@@ -259,5 +258,5 @@ describe('POST /users', () => {
 		 })
 		 .expect(400)
 		 .end(done);
-	})
-})
+	});
+});

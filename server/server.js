@@ -16,11 +16,12 @@ var app = express();
 app.use(bodyParser.json()); // send JSON to express application
 
 
-// Endpoints
+// GET /
 app.get('/', (req, res) => {
 	res.send('This is the test home page');
 })
 
+// POST /tasks
 app.post('/tasks', (req, res) => {
 	//console.log(req.body);
 	var task = new Task({
@@ -45,6 +46,7 @@ app.get('/tasks', (req, res) => {
 	});
 });
 
+// GET /tasks/:id
 app.get('/tasks/:id', (req, res) => {
 	var id = req.params.id;
 
@@ -65,6 +67,7 @@ app.get('/tasks/:id', (req, res) => {
 	});
 });
 
+// DELETE /tasks/:id
 app.delete('/tasks/:id', (req, res) => {
 	var id = req.params.id;
 
@@ -84,6 +87,7 @@ app.delete('/tasks/:id', (req, res) => {
 	});
 });
 
+// PATCH /tasks/:id
 app.patch('/tasks/:id', (req, res) => {
 	var id = req.params.id;
 
@@ -121,15 +125,28 @@ app.post('/users', (req, res) => {
 	user.save().then((user) => {
 		return user.generateAuthToken();
 	}).then((token) => {
-		res.header('x-auth', token).send(user);
+		res.header('x-auth', token).send(user); // generate auth token
 	}).catch((e) => {
 		res.status(400).send(e);
 	})
 });
 
-
+// GET /users/me
 app.get('/users/me', authenticate, (req, res) => {
 	res.send(req.user);
+});
+
+// POST /users/login
+app.post('/users/login', (req, res) => {
+	var body = _.pick(req.body, ['email', 'password']);
+
+	User.findByCredentials(body.email, body.password).then((user) => {
+		user.generateAuthToken().then((token) => {
+			res.header('x-auth', token).send(user);
+		});
+	}).catch((e) => {
+		res.status(400).send();
+	});
 });
 
 
@@ -137,6 +154,4 @@ app.listen(port, () => {
 	console.log(`\n** express server on port ${port}`);
 });
 
-module.exports = {
-	app
-}; // app: app
+module.exports = {app}; // app: app

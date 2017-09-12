@@ -10,7 +10,7 @@ mongoose.Promise = global.Promise;
 // connect to Heroku addon mLab db "MONGOLAB_BLUE_URI" or directly via mlab account "MLAB_URI"
 mongoose.connect(process.env.MONGOLAB_BLUE_URI || process.env.MLAB_URI, () => {
 	if (process.env.MLAB_URI) {
-		console.log('** connected to private mLab DB instance \n');
+		console.log('** connected to LOCAL dev mLab.com DB \n');
 	} else {
 		console.log('** connected to Heroku mLab addon instance \n');
 	}
