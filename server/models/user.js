@@ -34,6 +34,7 @@ var UserSchema = new mongoose.Schema({
 		}]
 });
 
+// Instance methods
 UserSchema.methods.toJSON = function () {
 	var user = this;
 	var userObject = user.toObject(); // toObject() converts mongoose variable user to an object where only the properties available on the document exist
@@ -60,7 +61,16 @@ UserSchema.methods.generateAuthToken = function () {
 	});
 }; // use "function" keyword; es6 arrow functions will not provide "this" keyword binding
 
-// Auth GET /users/me
+UserSchema.methods.removeToken =  function (token) {
+	 var user = this;
+	 return user.update({
+		 $pull: {              // $pull removes items from array that match certain criteria
+			 tokens: {token}
+		 }
+	 });
+};
+
+// Static methods
 UserSchema.statics.findByToken = function (token) {
 
 	var User = this; // model methods get called as the model with the "this" keyword binding
@@ -100,6 +110,7 @@ UserSchema.statics.findByCredentials = function (email, password){ // password i
 			});
 		});
 }; // use "function" keyword; es6 arrow functions will not provide "this" keyword binding
+
 
 UserSchema.pre('save', function(next) {
 	var user = this;
