@@ -3,44 +3,25 @@
 const expect = require('expect');
 const request = require('supertest');
 
-const {
-	ObjectID
-} = require('mongodb');
-const {
-	app
-} = require('./../server');
-const {
-	Task
-} = require('./../models/task');
+const {ObjectID} = require('mongodb');
+const {app} = require('./../server');
+const {Task} = require('./../models/task');
+const {User} = require('./../models/user');
+const {tasks, populateTasks, users, populateUsers} = require('./seed/seed');
 
 // populate db w/ test data
-const tasks = [{
-	_id: new ObjectID(),
-	text: '1st test task'
-}, {
-	_id: new ObjectID(),
-	text: '2nd test task',
-	completed: true,
-	completedAt: 333
-
-}];
-
 // run beforeEach before EVERY test to empty db and seed it before every supertest request
-beforeEach((done) => {
-	Task.remove({}).then(() => {
-		return Task.insertMany(tasks);
-	}).then(() => done()); // use a callback to call done() via expression based syntax
-});
+beforeEach(populateUsers);
+beforeEach(populateTasks);
+
 
 describe('POST /tasks', () => {
 	it('should create a new task', (done) => {
-		var text = 'Test text property of a task';
+		var text = 'dummy task text property';
 
 		request(app)
 			.post('/tasks')
-			.send({
-				text
-			})
+			.send({text})
 			.expect(200)
 			.expect((res) => {
 				expect(res.body.text).toBe(text);
@@ -50,9 +31,7 @@ describe('POST /tasks', () => {
 					return done(err);
 				}
 
-				Task.find({
-					text
-				}).then((tasks) => {
+				Task.find({text}).then((tasks) => {
 					expect(tasks.length).toBe(1);
 					expect(tasks[0].text).toBe(text); // new task created and prepended
 					done();
@@ -205,3 +184,80 @@ describe('PATCH /tasks/:id', () => {
 			.end(done);
 	})
 });
+
+describe('GET /users/me', () => {
+	it('should return user if authentication is successful', (done) => {
+		request(app)
+			.get('/users/me')
+			.set('x-auth', users[0].tokens[0].token) // x-auth header
+			.expect(200)
+			.expect((res) => {
+				expect(res.body._id).toBe(users[0]._id.toHexString());
+				expect(res.body.email).toBe(users[0].email);
+			})
+			.end(done)
+	});
+
+	it('should return a 401 if authentication fails', (done) => {
+	 	request(app)
+			.get('/users/me')
+			.expect(401)
+			.expect((res) => {
+				expect(res.body).toEqual({});
+			})
+			.end(done);
+	});
+});
+
+describe('POST /users', () => {
+	it('should create a user', (done) => {
+
+		var email =  'example.email@example.com';
+		var password = '123abc!';
+
+		request(app)
+			.post('/users')
+			.send({email, password})
+			.expect(200)
+			.expect((res) => {
+				expect(res.headers['x-auth']).toExist() // use bracket notation since x-auth has a dash in it
+				expect(res.body._id).toExist();
+				expect(res.body.email).toBe(email);
+			})
+			.end((err) => {
+				if(err){
+					return  done(err);
+				}
+				User.findOne({email}).then((user) => {
+					expect(user).toExist();
+					expect(user.password).toNotBe(password);
+					done();
+				});
+			});
+	});
+
+	it('should return validation errors if request is invalid (like an invalid/absent email or password)', (done) => {
+			request(app)
+			  .post('/users')
+			  .send({
+				  email: 'invalid_email-format',
+				  password: '122'
+			  })
+			  .expect(400)
+			  .end(done);
+
+	});
+
+	it('should not create user if email is already in use, even w/ a valid password', (done) => {
+
+
+		request(app)
+		 .post('/users')
+		 .send({
+			 email: users[0].email,
+			 password: 'password123!'
+		 })
+		 .expect(400)
+		 .end(done);
+	})
+})

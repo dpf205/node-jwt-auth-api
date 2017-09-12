@@ -38,7 +38,7 @@ UserSchema.methods.toJSON = function () {
 	var user = this;
 	var userObject = user.toObject(); // toObject() converts mongoose variable user to an object where only the properties available on the document exist
 
-	return _.pick(userObject, ['_id', 'email']); // ommit password and tokens array
+	return _.pick(userObject, ['_id', 'email']); // ommit password and tokens array and only return id and email
 };
 
 UserSchema.methods.generateAuthToken = function () {
@@ -47,7 +47,7 @@ UserSchema.methods.generateAuthToken = function () {
 
 	var token = jwt.sign({
 		_id: user._id.toHexString(),
-		access
+		access: access
 	}, 'abc123').toString();
 
 	user.tokens.push({
@@ -68,7 +68,7 @@ UserSchema.statics.findByToken = function (token) {
 
 	// handle any errors from jwt.verify()
 	try {
-		decoded = jwt.verify(token, 'abc123');;
+		decoded = jwt.verify(token, 'abc123');
 	} catch (e) {
 		return Promise.reject();
 	}
