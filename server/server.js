@@ -22,10 +22,11 @@ app.get('/', (req, res) => {
 })
 
 // POST /tasks
-app.post('/tasks', (req, res) => {
+app.post('/tasks', authenticate, (req, res) => {
 	//console.log(req.body);
 	var task = new Task({
-		text: req.body.text
+		text: req.body.text,
+		_creator: req.user._id
 	});
 
 	task.save().then((doc) => {
@@ -35,32 +36,32 @@ app.post('/tasks', (req, res) => {
 	});
 });
 
-app.get('/tasks', (req, res) => {
+// GET /tasks
+app.get('/tasks', authenticate, (req, res) => {
 
-	Task.find().then((tasks) => {
-		res.send({
-			tasks
-		}); //  tasks: tasks
+	Task.find({_creator: req.user._id}).then((tasks) => {
+		res.send({tasks}); //  tasks: tasks
 	}, (e) => {
 		res.status(400).send(e);
 	});
 });
 
 // GET /tasks/:id
-app.get('/tasks/:id', (req, res) => {
+app.get('/tasks/:id', authenticate, (req, res) => {
 	var id = req.params.id;
 
 	if (!ObjectID.isValid(id)) {
 		return res.status(404).send();
 	}
 
-	Task.findById(id).then((task) => {
+	Task.findOne({
+		_id: id,
+		_creator: req.user._id
+	}).then((task) => {
 		if (!task) {
 			return res.status(404).send();
 		}
-		res.send({
-			task
-		}); // task: task
+		res.send({task}); // task: task
 		// console.log(task.text);
 	}).catch((e) => {
 		res.status(404).send();
@@ -68,27 +69,28 @@ app.get('/tasks/:id', (req, res) => {
 });
 
 // DELETE /tasks/:id
-app.delete('/tasks/:id', (req, res) => {
+app.delete('/tasks/:id', authenticate, (req, res) => {
 	var id = req.params.id;
 
 	if (!ObjectID.isValid(id)) {
 		return res.status(404).send();
 	}
 
-	Task.findByIdAndRemove(id).then((task) => {
+	Task.findOneAndRemove({
+		_id: id,
+		_creator: req.user._id
+	}).then((task) => {
 		if (!task) {
 			return res.status(404).send();
 		}
-		res.send({
-			task
-		}); // {task: task}
+		res.send({task}); // {task: task}
 	}).catch((e) => {
 		res.status(404).send();
 	});
 });
 
 // PATCH /tasks/:id
-app.patch('/tasks/:id', (req, res) => {
+app.patch('/tasks/:id', authenticate, (req, res) => {
 	var id = req.params.id;
 
 	// limit which proerties are updated by user
@@ -101,7 +103,10 @@ app.patch('/tasks/:id', (req, res) => {
 		body.completedAt = null;
 	}
 
-	Task.findByIdAndUpdate(id, {
+	Task.findOneAndUpdate({
+		_id: id, 
+		_creator: req.user._id
+	}, {
 		$set: body
 	}, {
 		new: true
@@ -109,9 +114,7 @@ app.patch('/tasks/:id', (req, res) => {
 		if (!task) {
 			return res.status(404).send();
 		}
-		res.send({
-			task
-		});
+		res.send({task});
 	}).catch((e) => {
 		res.status(400).send();
 	})
