@@ -104,7 +104,7 @@ app.patch('/tasks/:id', authenticate, (req, res) => {
 	}
 
 	Task.findOneAndUpdate({
-		_id: id, 
+		_id: id,
 		_creator: req.user._id
 	}, {
 		$set: body
